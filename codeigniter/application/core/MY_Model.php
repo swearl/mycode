@@ -77,7 +77,7 @@ class DB_Model extends MY_Model {
 
 	public function insert() {
 		foreach($this->_fields as $v) {
-			if($v != $this->_key) {
+			if($v != $this->_key && !empty($this->row->$v)) {
 				$this->db->set($v, $this->row->$v);
 			}
 		}
@@ -147,7 +147,7 @@ class DB_Model extends MY_Model {
 		return $this->get_by($this->_key, $key, $empty);
 	}
 
-	public function reset_row() {
+	public function clear_row() {
 		$this->row = null;
 		$this->row = new stdClass();
 	}

@@ -20,7 +20,7 @@ class DB_Model extends MY_Model {
 	protected $_order = false;
 	protected $_total = 0;
 
-	public function __construct($table, $key) {
+	public function __construct($table, $key = "id") {
 		parent::__construct();
 		$this->_table = $table;
 		$this->_key = $key;
@@ -66,27 +66,31 @@ class DB_Model extends MY_Model {
 		return $this->store();
 	}
 
-	public function store() {
+	public function store($return_affected_rows = false) {
 		$keyname = $this->_key;
 		if(empty($this->row->$keyname)) {
-			return $this->insert();
+			return $this->insert($return_affected_rows);
 		} else {
-			return $this->update();
+			return $this->update($return_affected_rows);
 		}
 	}
 
-	public function insert() {
+	public function insert($return_affected_rows = false) {
 		foreach($this->_fields as $v) {
-			if($v != $this->_key && !empty($this->row->$v)) {
+			if($v != $this->_key && isset($this->row->$v)) {
 				$this->db->set($v, $this->row->$v);
 			}
 		}
 		$this->db->insert($this->_table);
-		$id = $this->db->insert_id();
-		return $this->get($id);
+		if($return_affected_rows) {
+			return $this->db->affected_rows();
+		} else {
+			$id = $this->db->insert_id();
+			return $this->get($id);
+		}
 	}
 
-	public function update() {
+	public function update($return_affected_rows = false) {
 		$keyname = $this->_key;
 		foreach($this->_fields as $v) {
 			if($v == $keyname) {
@@ -96,7 +100,15 @@ class DB_Model extends MY_Model {
 			}
 		}
 		$this->db->update($this->_table);
-		return $this->get($this->row->$keyname);
+		if($return_affected_rows) {
+			return $this->db->affected_rows();
+		} else {
+			return $this->get($this->row->$keyname);
+		}
+	}
+
+	public function where($field, $value) {
+		$this->db->where($field, $value);
 	}
 
 	public function delete($pks) {

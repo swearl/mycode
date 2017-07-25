@@ -26,7 +26,7 @@ if (!function_exists('get_post')) {
 }
 
 if (!function_exists('send_request')) {
-	function send_request($url, $data = NULL, $ssl = FALSE, $ctype = "application/x-www-form-urlencoded") {
+	function send_request($url, $data = NULL, $ssl = FALSE, $referer = FALSE, $cookie = FALSE, $ctype = FALSE) {
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
 		if ($ssl === TRUE) {
@@ -36,10 +36,19 @@ if (!function_exists('send_request')) {
 		if (!empty($data)) {
 			curl_setopt($curl, CURLOPT_POST, 1);
 			curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+			if(empty($ctype)) {
+				$ctype = "application/x-www-form-urlencoded";
+			}
 			curl_setopt($curl, CURLOPT_HTTPHEADER, array(
 				'Content-Type: ' . $ctype,
 				'Content-Length: ' . strlen($data)
 			));
+		}
+		if(!empty($referer)) {
+			curl_setopt($curl, CURLOPT_REFERER, $referer);
+		}
+		if(!empty($cookie)) {
+			curl_setopt($curl, CURLOPT_COOKIE, $cookie);
 		}
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		$output = curl_exec($curl);
@@ -92,5 +101,32 @@ if (!function_exists('now_time')) {
 			return human2unix($human_time);
 		}
 		return $time;
+	}
+}
+
+if (!function_exists("currentUrl")) {
+	function currentUrl() {
+		$pageURL = 'http';
+
+		if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
+			$pageURL .= "s";
+		}
+		$pageURL .= "://";
+
+		if ($_SERVER["SERVER_PORT"] != "80") {
+			$pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
+		}else {
+			$pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+		}
+		return $pageURL;
+	}
+}
+
+if(!function_exists("is_mobile")) {
+	function is_mobile($mobile) {
+	    if (!is_numeric($mobile)) {
+	        return false;
+	    }
+	    return preg_match('#^13[\d]{9}$|^14[5,7]{1}\d{8}$|^15[^4]{1}\d{8}$|^17[0,6,7,8]{1}\d{8}$|^18[\d]{9}$#', $mobile) ? true : false;
 	}
 }

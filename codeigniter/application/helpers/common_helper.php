@@ -83,6 +83,6 @@ if (!function_exists("currentUrl")) {
 
 if(!function_exists("is_mobile")) {
 	function is_mobile($mobile) {
-	    return preg_match("/^(13|14|15|16|17|18|19)\d{9}$/", $mobile);
+	    return preg_match("/^1[3456789]\d{9}$/", $mobile);
 	}
 }

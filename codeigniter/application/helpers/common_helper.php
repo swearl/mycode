@@ -17,14 +17,6 @@ if (!function_exists('get')) {
 	}
 }
 
-if (!function_exists('get_post')) {
-	function get_post($key = NULL, $default = "", $xss = TRUE) {
-		$CI = & get_instance();
-		$val= $CI->input->get_post($key, $xss);
-		return is_null($val) ? $default : $val;
-	}
-}
-
 if (!function_exists('send_request')) {
 	function send_request($url, $data = NULL, $referer = FALSE, $cookie = FALSE) {
 		$curl = curl_init();
@@ -81,8 +73,8 @@ if (!function_exists("currentUrl")) {
 	}
 }
 
-if(!function_exists("is_mobile")) {
-	function is_mobile($mobile) {
-	    return preg_match("/^1[3456789]\d{9}$/", $mobile);
+if(!function_exists("isMobile")) {
+	function isMobile($mobile) {
+		return preg_match("/^1[3456789]\d{9}$/", $mobile);
 	}
 }
